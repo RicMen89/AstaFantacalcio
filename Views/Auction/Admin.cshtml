@@ -1,0 +1,271 @@
+﻿@model AstaFantacalcio.Models.AuctionViewModel
+@{
+
+    ViewData["Title"] = Model.Settings?.LeagueName + " - " + Model.Settings?.Season + " (ADMIN)";
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <div class="container-fluid py-4">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center mb-4">
+                    <i class="fas fa-soccer-ball text-success"></i>
+                    @ViewData["Title"]
+                    <i class="fas fa-gavel text-primary"></i>
+                </h1>
+            </div>
+        </div>
+
+        <!-- Messaggi di feedback -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle"></i> @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["Warning"] != null)
+        {
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle"></i> @TempData["Warning"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+
+        <!-- Upload del listino -->
+        
+
+    <!-- Controlli estrazione -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="text-center mb-4"><i class="fas fa-dice"></i> Estrazione Giocatore</h5>
+
+                    <!-- Tab Navigation -->
+                    <ul class="nav nav-tabs justify-content-center" id="extractionTabs" role="tablist">
+                 
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="range-tab" data-bs-toggle="tab" data-bs-target="#range" type="button" role="tab">
+                                <i class="fas fa-sliders-h"></i> Rank
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content pt-4">
+                        <div class="text-center">
+                        <form asp-action="DrawFromRange" method="post" style="margin-top:10px;">
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-md-3">
+                                        <label for="ruolo-range" class="form-label">Ruolo</label>
+                                        <select name="ruolo" id="ruolo-range" class="form-select" required>
+                                            <option value="">Seleziona ruolo</option>
+                                            <option value="P">Portiere</option>
+                                            <option value="D">Difensore</option>
+                                            <option value="C">Centrocampista</option>
+                                            <option value="A">Attaccante</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Rank min:</label>
+                                        <input type="number" name="minQuota" value="1" min="1" step="1" class="form-control" />
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">max:</label>
+                                        <input type="number" name="maxQuota" value="10" min="1" step="1" max="200" class="form-control" />
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button type="submit" class="btn btn-success btn-lg me-3 mb-2">
+                                            <i class="fas fa-random"></i> Estrai per Rank
+                                        </button>
+                                    </div>
+                                </div>
+                                    
+                        </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        </div>
+         
+    <!-- Giocatore corrente -->
+    @if (Model.CurrentPlayer != null)
+    {
+        <div class="row mb-4" id="DrawedPlayer">
+            <div class="col-12">
+                <div class="card player-card">
+                    <div class="card-body text-center">
+                        <h2 class="card-title">
+                            <i class="fas fa-star text-warning"></i>
+                            @Model.CurrentPlayer.DisplayNome
+                            @if (Model.CurrentPlayer.FuoriLista)
+                            {
+                                <span class="fuori-lista">(FUORI LISTA)</span>
+                            }
+                        </h2>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <h6>Squadra</h6>
+                                <span class="badge bg-primary fs-6">@Model.CurrentPlayer.Squadra</span>
+                            </div>
+                            <div class="col-md-2">
+                                <h6>Ruolo</h6>
+                                <span class="badge role-badge bg-info fs-6">@Model.CurrentPlayer.RuoloMantra</span>
+                            </div>
+                            <div class="col-md-2">
+                                <h6>Quotazione</h6>
+                                <div class="quota-display">€@Model.CurrentPlayer.Quotazione</div>
+                            </div>
+                            <div class="col-md-2">
+                                <h6>Età</h6>
+                                <span class="fs-5">@Model.CurrentPlayer.Under anni</span>
+                            </div>
+                            <div class="col-md-3">
+                                <h6>Rank ruolo</h6>
+                                <span class="fs-5">@Model.CurrentPlayer.RankRuolo</span>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Form per completare l'asta -->
+                        <form asp-action="CompleteAuction" method="post" class="row g-3 justify-content-center">
+                            <div class="col-md-3">
+                                <input type="number" class="form-control" name="finalPrice" placeholder="Prezzo finale" step="1" required>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" class="form-control" name="buyer" placeholder="Acquirente" required>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" class="form-control" name="buyerTeam" placeholder="Fanta Squadra" required>
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-check"></i> Assegna!
+                                </button>
+                            </div>
+                            <div class="col-auto">
+                                <a asp-action="SkipPlayer" class="btn btn-secondary">
+                                    <i class="fas fa-redo"></i> Rimetti in Palio
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+                
+   
+        <!-- Asta -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-body text-center">
+                        <h4>Controlli Asta <i class="fas fa-gavel"></i></h4>
+                
+                            <!--Apertura chiusura offerte -->
+                            @if (Model.AuctionOpen)
+                            {
+                                <p>⏳ Asta in corso - Tipo: @Model.AuctionType</p>
+                                <form asp-action="CancelAuction" method="post">
+                                <button type="submit" class="btn btn-danger btn-lg">❌ Annulla Asta</button>
+                                </form>
+                                <hr />
+                                <p id="timer">Tempo rimanente: <span id="Bid_Seconds"></span> sec</p>
+
+                                <div id="current-bid">
+                                    Offerta attuale: <strong id="Bid_Amount">@Model.CurrentBid</strong> crediti
+                                da <strong id="Bidder">@Model.CurrentBidder</strong>
+                                </div>
+                            }
+                            else
+                            {
+                                <form asp-action="OpenAuction" method="post" class="row">
+                                <div class="col-3">
+                                    <label class="form-label">Durata (sec):</label>
+                                    <input class="form-control" type="number" name="seconds" value="60" min="10" />
+                                </div>
+                                <div class="col-3">
+                                    <label class="form-label">Tipo:</label>
+                                    <select name="type" class="form-control">
+                                        <option value="OpenAscending">Rialzo Aperto</option>
+                                        <option value="SealedFirstPrice" disabled>Busta Chiusa</option>
+                                    </select>
+                                 </div>
+                                <div class="col-3">
+                                    <label class="form-label">&nbsp;</label>
+                                    <button type="submit" class="form-control btn btn-secondary btn-blue">🚀 Avvia Asta</button>
+                                </div>
+                                </form>
+                            }
+                      
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+    }
+
+        <!-- Partecipanti all'asta -->
+        @await Html.PartialAsync("_ParticipantBox")
+
+        <!-- Ultimi giocatori venduti -->
+        @await Html.PartialAsync("_AuctionedPlayers", Model)
+
+        <div class="row mb-4 mt-5">
+            <div class="col-6">
+                <div class="card shadow">
+                    <div class="card-body text-center">
+                        <h4><i class="fas fa-download text-primary"></i> Esporta Rose</h4>
+                        <a class="btn btn-dark btn-lg" href="/Auction/ExportAuctionedPlayers" target="_blank">Esporta Csv rose</a>
+                    </div>
+                </div>
+            
+                <div class="card shadow">
+                    <div class="card-body text-center">
+                        <h4><i class="fas fa-download text-primary"></i> Ricarica stato ultima asta</h4>
+                        <form asp-action="ReloadAuctionedPlayers" id="ReloadAuctionedPlayers" method="post" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                @Html.DropDownList("filePath", Model.CsvAcquistiFiles, new { @name="filePath", @class="form-control"})
+                            </div>
+                            <button type="submit" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-file-upload"></i> Ricarica da Csv rose
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+     
+            <div class="col-6">
+          
+                <div class="card shadow">
+                    <div class="card-body text-center">
+                        <h4><i class="fas fa-upload text-primary"></i> Ricarica il Listone</h4>
+                        <form asp-action="UploadListino" id="UploadListinoForm" method="post" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <input type="file" class="form-control" name="file" accept=".csv" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-file-upload"></i> Carica Listone
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+                
+            
+        </div>
+    
+    
+</div>

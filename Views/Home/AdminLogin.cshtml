@@ -1,0 +1,36 @@
+﻿
+@{
+    ViewData["Title"] = "Login Admin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center mb-4">
+                <i class="fas fa-user-tie text-success"></i>
+                @ViewData["Title"]
+            </h1>
+        </div>
+    </div>
+
+
+<form method="post" asp-action="AdminLogin">
+    <div class="row mt-2 mb-2">
+        <div class="col-3">
+            <label class="form-label">Password</label>
+            <input class="form-control" type="password" name="password" placeholder="Password Admin" />
+            </div>
+            <div class="col-3">
+                <label class="form-label">&nbsp;</label>
+                <button class="form-control btn-danger" type="submit">Accedi</button>
+            </div>
+    </div>
+</form>
+
+@if (ViewBag.Error != null)
+{
+    <div style="color:red">@ViewBag.Error</div>
+}
+
+</div>

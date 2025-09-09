@@ -1,0 +1,5 @@
+C:\Users\riccardo menichelli\source\repos\PeppaPig\AstaFantacalcio\obj\Release\net8.0\win-x64\PubTmp\Out\appsettings.Development.json
+C:\Users\riccardo menichelli\source\repos\PeppaPig\AstaFantacalcio\obj\Release\net8.0\win-x64\PubTmp\Out\appsettings.json
+C:\Users\riccardo menichelli\source\repos\PeppaPig\AstaFantacalcio\obj\Release\net8.0\win-x64\PubTmp\Out\libman.json
+C:\Users\riccardo menichelli\source\repos\PeppaPig\AstaFantacalcio\obj\Release\net8.0\win-x64\PubTmp\Out\AstaFantacalcio.pdb
+C:\Users\riccardo menichelli\source\repos\PeppaPig\AstaFantacalcio\obj\Release\net8.0\win-x64\PubTmp\Out\AstaFantacalcio.exe

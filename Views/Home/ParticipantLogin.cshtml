@@ -1,0 +1,56 @@
+﻿@model AstaFantacalcio.Models.ParticipantLoginModel
+@{
+    ViewData["Title"] = "Login Partecipante";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center mb-4">
+                <i class="fas fa-user text-success"></i>
+                @ViewData["Title"]
+            </h1>
+        </div>
+    </div>
+        @using (Html.BeginForm("ParticipantLogin", "Home", FormMethod.Post)) {
+
+        <div class="row mt-2 mb-2">
+            <div class="col-3">
+                <label class="form-label">UserName</label>
+                @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", maxlength = "20", @id = "username", placeholder = "Inserisci il tuo nome" })
+
+            </div>
+            <div class="col-4">
+                <label class="form-label">Squadra <small>* come inserito su leghe.fantacalcio</small></label>
+                @Html.TextBoxFor(m => m.TeamName, new { @class = "form-control", @id = "teamname", placeholder = "Inserisci il nome della squadra" })
+                @* <input class="form-control" type="text" id="teamname" placeholder="Inserisci il nome della squadra" /> *@
+            </div>
+            <div class="col-3">
+                <label class="form-label">Allenatore</label>
+                @Html.TextBoxFor(m => m.ManagerName, new { @class = "form-control", @id = "managername", maxlength = "20", placeholder = "Inserisci il nome dell'allenatore" })
+                @* <input class="form-control" type="text" id="managername" maxlength="20" placeholder="Inserisci il nome dell'allenatore" /> *@
+            </div>
+            
+            <div class="row mt-2 mb-2">
+                <div class="col-3">
+                    <label class="form-label">Password</label>
+                    @Html.TextBoxFor(m => m.Password, new { @class = "form-control", @id = "password", type = "password", placeholder = "Password" })
+                    @* <input class="form-control" type="password" name="password" placeholder="Password" /> *@
+                </div>
+                <div class="col-3">
+                    <label class="form-label">&nbsp;</label>
+                    <button class="form-control btn-success" type="button" id="registerBtn">Accedi</button>
+                </div>
+            </div>
+        </div>
+    
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert-danger">@ViewBag.Error</div>
+    }
+
+</div>
+

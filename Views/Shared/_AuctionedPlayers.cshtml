@@ -1,0 +1,49 @@
+﻿@model AstaFantacalcio.Models.AuctionViewModel
+
+@if (Model.AuctionedPlayers != null && Model.AuctionedPlayers.Any())
+{
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-history"></i> Ultimi Giocatori Venduti</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Squadra</th>
+                                    <th>Ruolo</th>
+                                    <th>Quotazione</th>
+                                    <th>Crediti vendita</th>
+                                    <th>Acquirente</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var player in Model.AuctionedPlayers.TakeLast(10))
+                                {
+                                    <tr>
+                                        <td>
+                                            @player.DisplayNome
+                                            @if (player.FuoriLista)
+                                            {
+                                                <small class="text-danger">*</small>
+                                            }
+                                        </td>
+                                        <td>@player.Squadra</td>
+                                        <td><span class="badge bg-info">@player.RuoloMantra</span></td>
+                                        <td>€@player.Quotazione</td>
+                                        <td class="fw-bold text-success">€@player.PrezzoVendita</td>
+                                        <td><span class="badge bg-primary">@player.AcquirenteLega</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

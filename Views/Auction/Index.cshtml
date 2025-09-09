@@ -1,0 +1,253 @@
+﻿@model AstaFantacalcio.Models.AuctionViewModel
+@{
+    ViewData["Title"] = Model.Settings?.LeagueName + "- " + Model.Settings?.Season;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center mb-4">
+                <i class="fas fa-soccer-ball text-success"></i>
+                @ViewData["Title"]
+                <i class="fas fa-gavel text-primary"></i>
+            </h1>
+        </div>
+    </div>
+
+    <!-- Messaggi di feedback -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Warning"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle"></i> @TempData["Warning"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+       
+
+
+    @if (Model.TotalPlayers > 0)
+    {
+       
+       
+        <!-- Giocatore corrente -->
+        <div class="row mb-4" id="DrawedPlayer" @if(Model.CurrentPlayer == null) {
+            @Html.Raw("style='display: none;'")}>
+            <div class="col-12">
+                <div class="card player-card">
+                    <div class="card-body text-center">
+                        <h2 class="card-title">
+                            <i class="fas fa-star text-warning"></i>
+                            <span id="Player_DisplayNome">
+                            @if (Model.CurrentPlayer != null)
+                                @Html.Raw(Model.CurrentPlayer.DisplayNome)
+                            
+                            </span>
+
+                        </h2>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <h6>Squadra</h6>
+                            <span class="badge bg-primary fs-6" id="Player_Squadra">
+                                @if(Model.CurrentPlayer != null)
+                                @Html.Raw(Model.CurrentPlayer.Squadra)
+                            </span>
+                            </div>
+                            <div class="col-md-2">
+                                <h6>Ruolo</h6>
+                                <span class="badge role-badge bg-info fs-6" id="Player_RuoloMantra">
+                                    @if (Model.CurrentPlayer != null)
+                                        @Html.Raw(Model.CurrentPlayer.Ruolo + "/" + Model.CurrentPlayer.RuoloMantra)
+                                
+                                </span>
+                            </div>
+                            <div class="col-md-2">
+                                <h6>Quotazione</h6>
+                                <div class="quota-display" id="Player_Quotazione">
+                                        @if (Model.CurrentPlayer != null)
+                                            @Html.Raw(Model.CurrentPlayer.Quotazione + " fml")
+                                
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <h6>Età</h6>
+                                <span class="fs-5" id="Player_Under">
+                                            @if (Model.CurrentPlayer != null)
+                                                @Html.Raw(Model.CurrentPlayer.Under)
+                                
+                                </span>
+                            </div>
+                            <div class="col-md-3">
+                                <h6>Rank ruolo</h6>
+                                <span class="fs-5" id="Player_RankRuolo">
+                                    @if (Model.CurrentPlayer != null)
+                                        @Html.Raw("#" + Model.CurrentPlayer.RankRuolo)
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+      
+        <!-- Offerte -->
+        <div class="row mb-4" id="BidSection" style="display:none;">
+            <div class="col-12">
+                <div class="card player-card">
+                    <div class="card-body text-center row">
+                        <div class="col-6">
+                            <p id="timer">Tempo rimanente: <strong id="Bid_Seconds"></strong> sec</p>
+
+                            <h5 id="current-bid">
+                                Offerta attuale: <strong id="Bid_Amount">@Model.CurrentBid</strong> crediti
+                                da <strong id="Bidder">@Model.CurrentBidder</strong>
+                            </h5>
+                        </div>
+                        <div id="offer-form" class="col-4 mt-4 ">
+                            
+                            <input type="number" id="Bid_Input" class="form-control" min="1" max="" value="" placeholder="Inserisci la tua offerta" />
+                            <label for="bid_input" class="small form-text" id="Bid_Input_Label"></label>
+                        </div>
+                        <div class="col-2 mt-4 ">
+                            <button id="PlaceBidBtn" class="btn btn-success d-inline">Fai Offerta</button>
+                        </div>
+                        <h4 id="Bid_Messages" class="mt-3 text-danger"></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!--Rosa attuale-->
+        <div class="row mb-4" id="MyRoseterSection" style="display:none">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <h5><i class="fas fa-address-book"></i> La tua Rosa <strong id="MyRosterName"></strong></h5>
+                    <h6>Acquisti: <span>P: <strong id="MyRosterP">0</strong></span> - <span>D: <strong id="MyRosterD">0</strong></span> - <span>C: <strong id="MyRosterC">0</strong></span> - <span>A: <strong id="MyRosterA">0</strong></span></h6>
+                    <h6><i class="fas fa-calculator"></i> Crediti residui <strong id="ResidualCredits">€</strong></h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Squadra</th>
+                                    <th>Ruolo</th>
+                                    <th>Quotazione</th>
+                                    <th>Crediti per acquisto</th>
+                                </tr>
+                            </thead>
+                            <tbody id="MyRoseterTable">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Ultimi giocatori venduti -->
+        @await Html.PartialAsync("_AuctionedPlayers", Model)
+        
+        <!-- Statistiche generali -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stats-card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h5><i class="fas fa-users"></i> Totale Giocatori</h5>
+                        <h2>@Model.TotalPlayers</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h5><i class="fas fa-user-check"></i> Rimasti</h5>
+                        <h2>@Model.RemainingPlayers</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card bg-info text-white">
+                    <div class="card-body text-center">
+                        <h5><i class="fas fa-handshake"></i> Venduti</h5>
+                        <h2>@Model.AuctionedPlayers.Count</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <h5><i class="fas fa-percentage"></i> Completata</h5>
+                        <h2>@Math.Round((double)Model.AuctionedPlayers.Count / Model.TotalPlayers * 100, 1)%</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+         <!-- Statistiche per ruolo -->
+            
+        var roleStats = ViewBag.RoleStats as Dictionary<string, int> ?? new Dictionary<string, int>();
+
+        @if (roleStats.Any())
+        {
+            <div class="card mb-4">
+
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-bar"></i> Giocatori Disponibili per Ruolo</h5>
+                </div>
+                <div class="row mt-2 mb-2">
+                        @foreach (var role in roleStats)
+                        {
+                            string bgClass = role.Key switch
+                            {
+                                "P" => "bg-primary",
+                                "D" => "bg-success",
+                                "C" => "bg-info",
+                                "A" => "bg-warning",
+                                _ => "bg-secondary"
+                            };
+
+                            <div class="col-3">
+
+                                <div class="card stats-card @bgClass text-white">
+                                <div class="card-body text-center">
+                                        @role.Key: @role.Value
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                    
+               
+         
+        }
+
+
+        <!-- Partecipanti all'asta -->
+        @await Html.PartialAsync("_ParticipantBox")
+
+    }
+    
+    
+</div>
+

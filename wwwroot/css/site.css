@@ -1,0 +1,63 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.player-card {
+    border: 2px solid #007bff;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    box-shadow: 0 4px 15px rgba(0,123,255,0.2);
+}
+
+.role-badge {
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.quota-display {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.fuori-lista {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.stats-card {
+    border-radius: 10px;
+    transition: transform 0.2s;
+}
+
+    .stats-card:hover {
+        transform: translateY(-2px);
+    }
+
+.btn-role {
+    margin: 2px;
+    transition: all 0.3s;
+}
+
+    .btn-role:hover {
+        transform: scale(1.05);
+    }

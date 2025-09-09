@@ -1,0 +1,102 @@
+﻿@model AstaFantacalcio.Models.AuctionViewModel
+@{
+    ViewData["Title"] = "Asta Fantacalcio";
+}
+
+<h2>Asta Fantacalcio</h2>
+
+<div id="auction-status">
+    <h3>Giocatore corrente</h3>
+    <div>
+        @if (Model.CurrentPlayer != null)
+        {
+            <p><b>@Model.CurrentPlayer.Nome</b> (@Model.CurrentPlayer.RuoloPrincipale)</p>
+        }
+        else
+        {
+            <p>Nessun giocatore estratto</p>
+        }
+    </div>
+
+    <div id="timer">
+        <h4>Tempo rimasto: <span id="seconds">@Model.SecondsRemaining</span> sec</h4>
+    </div>
+
+    <div id="current-bid">
+        <h4>Offerta corrente: <span id="bidAmount">@Model.CurrentBid</span> €</h4>
+        <p id="bidder">Ultimo offerente: @Model.CurrentBidder</p>
+    </div>
+</div>
+
+<hr />
+
+<div id="bid-form">
+    <input type="number" id="bidInput" placeholder="Inserisci offerta" min="1" step="1" />
+    <button id="placeBidBtn">Fai offerta</button>
+</div>
+
+<div id="messages" style="margin-top:20px; color:darkblue;"></div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script>
+        const user = "utente-" + Math.floor(Math.random() * 1000); // da sostituire con login reale
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/auctionhub")
+            .build();
+
+        // Ricezione eventi dal server
+        connection.on("BidAccepted", (bidder, amount) => {
+            document.getElementById("bidAmount").innerText = amount;
+            document.getElementById("bidder").innerText = "Ultimo offerente: " + bidder;
+            log("Offerta accettata da " + bidder + ": " + amount + " €");
+        });
+
+        connection.on("BidRejected", (msg) => {
+            log("❌ Offerta rifiutata: " + msg);
+        });
+
+        connection.on("AuctionOpened", (data) => {
+            document.getElementById("seconds").innerText = data.seconds;
+            log("Nuova asta aperta (" + data.type + ")");
+        });
+
+        connection.on("TimerUpdate", (seconds) => {
+            document.getElementById("seconds").innerText = seconds;
+        });
+
+        connection.on("AuctionEnded", (result) => {
+            log("🏆 Asta conclusa. Vincitore: " + (result.winner || "Nessuno") + " per " + result.price + " €");
+        });
+
+        // Invio offerta
+        document.getElementById("placeBidBtn").addEventListener("click", async () => {
+            const amount = parseFloat(document.getElementById("bidInput").value);
+            if (isNaN(amount) || amount <= 0) {
+                log("Inserisci un importo valido");
+                return;
+            }
+
+            // Qui scegliamo il metodo in base al tipo di asta
+            const auctionType = "@Model.AuctionType";
+
+            if (auctionType === "OpenAscending") {
+                await connection.invoke("PlaceOpenBid", user, amount);
+            } else {
+                await connection.invoke("PlaceSealedBid", user, amount);
+                log("Offerta segreta inviata (" + amount + " €)");
+            }
+
+            document.getElementById("bidInput").value = "";
+        });
+
+        function log(message) {
+            const div = document.createElement("div");
+            div.innerText = message;
+            document.getElementById("messages").prepend(div);
+        }
+
+        connection.start().catch(err => console.error(err));
+    </script>
+}
